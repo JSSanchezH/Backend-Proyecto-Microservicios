@@ -1,5 +1,15 @@
 from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy import create_engine, Column, Integer, Date, Time, Double, Boolean, ForeignKey, String
+from sqlalchemy import (
+    create_engine,
+    Column,
+    Integer,
+    Date,
+    Time,
+    Double,
+    Boolean,
+    ForeignKey,
+    String,
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session, relationship
 import os
@@ -22,9 +32,10 @@ Base = declarative_base()
 
 # ----------- Company Models -----------
 
+
 # Represents a company entity.
 class Company(Base):
-    __tablename__ = 'company'
+    __tablename__ = "company"
 
     company_id = Column(Integer, primary_key=True)
     name = Column(String(50))
@@ -40,10 +51,10 @@ class Company(Base):
 
 # Represents user credentials linked to a company.
 class UserCompany(Base):
-    __tablename__ = 'user_company'
+    __tablename__ = "user_company"
 
     user_company_id = Column(Integer, primary_key=True)
-    company_id = Column(Integer, ForeignKey('company.company_id'))
+    company_id = Column(Integer, ForeignKey("company.company_id"))
     username = Column(String(50))
     password = Column(String(50))
 
@@ -52,9 +63,10 @@ class UserCompany(Base):
 
 # ----------- Location Models -----------
 
+
 # Represents a continent.
 class Continent(Base):
-    __tablename__ = 'continent'
+    __tablename__ = "continent"
 
     continent_id = Column(Integer, primary_key=True)
     name = Column(String(100))
@@ -64,11 +76,11 @@ class Continent(Base):
 
 # Represents a country, which belongs to a continent.
 class Country(Base):
-    __tablename__ = 'country'
+    __tablename__ = "country"
 
     country_id = Column(Integer, primary_key=True)
     name = Column(String(100))
-    continent_id = Column(Integer, ForeignKey('continent.continent_id'))
+    continent_id = Column(Integer, ForeignKey("continent.continent_id"))
 
     continent = relationship("Continent", back_populates="countries")
     states = relationship("State", back_populates="country")
@@ -76,11 +88,11 @@ class Country(Base):
 
 # Represents a state or province, part of a country.
 class State(Base):
-    __tablename__ = 'state'
+    __tablename__ = "state"
 
     state_id = Column(Integer, primary_key=True)
     name = Column(String(100))
-    country_id = Column(Integer, ForeignKey('country.country_id'))
+    country_id = Column(Integer, ForeignKey("country.country_id"))
 
     country = relationship("Country", back_populates="states")
     cities = relationship("City", back_populates="state")
@@ -88,31 +100,32 @@ class State(Base):
 
 # Represents a city, part of a state.
 class City(Base):
-    __tablename__ = 'city'
+    __tablename__ = "city"
 
     city_id = Column(Integer, primary_key=True)
     name = Column(String(100))
-    state_id = Column(Integer, ForeignKey('state.state_id'))
+    state_id = Column(Integer, ForeignKey("state.state_id"))
 
     state = relationship("State", back_populates="cities")
 
 
 # Represents a department within a company.
 class Department(Base):
-    __tablename__ = 'department'
+    __tablename__ = "department"
 
     department_id = Column(Integer, primary_key=True)
     name = Column(String(100))
-    company_id = Column(Integer, ForeignKey('company.company_id'))
+    company_id = Column(Integer, ForeignKey("company.company_id"))
 
     company = relationship("Company", back_populates="departments")
 
 
 # ----------- Employee Models -----------
 
+
 # Represents a job role.
 class Role(Base):
-    __tablename__ = 'role'
+    __tablename__ = "role"
 
     role_id = Column(Integer, primary_key=True)
     name = Column(String(50))
@@ -122,7 +135,7 @@ class Role(Base):
 
 # Represents an employee in the company.
 class Employee(Base):
-    __tablename__ = 'employee'
+    __tablename__ = "employee"
 
     employee_id = Column(Integer, primary_key=True)
     first_name = Column(String(50))
@@ -130,9 +143,9 @@ class Employee(Base):
     email = Column(String(50))
     phone_number = Column(Integer)
     hire_date = Column(Date)
-    role_id = Column(Integer, ForeignKey('role.role_id'))
-    manager_id = Column(Integer, ForeignKey('employee.employee_id'), nullable=True)
-    department_id = Column(Integer, ForeignKey('department.department_id'))
+    role_id = Column(Integer, ForeignKey("role.role_id"))
+    manager_id = Column(Integer, ForeignKey("employee.employee_id"), nullable=True)
+    department_id = Column(Integer, ForeignKey("department.department_id"))
     url_foto = Column(String(100))
     status = Column(Boolean)
 
@@ -147,10 +160,10 @@ class Employee(Base):
 
 # Represents an evaluation record for an employee.
 class Evaluation(Base):
-    __tablename__ = 'evaluation'
+    __tablename__ = "evaluation"
 
     evaluation_id = Column(Integer, primary_key=True)
-    employee_id = Column(Integer, ForeignKey('employee.employee_id'))
+    employee_id = Column(Integer, ForeignKey("employee.employee_id"))
     evaluation_date = Column(Date)
     punctuality = Column(Integer)
     performance = Column(Integer)
@@ -164,10 +177,10 @@ class Evaluation(Base):
 
 # Represents the employment history of an employee (resignation, dismissal, etc.).
 class History(Base):
-    __tablename__ = 'history'
+    __tablename__ = "history"
 
     history_id = Column(Integer, primary_key=True)
-    employee_id = Column(Integer, ForeignKey('employee.employee_id'))
+    employee_id = Column(Integer, ForeignKey("employee.employee_id"))
     date_of_dismissal = Column(Date)
     reason = Column(String(100))
 
@@ -176,12 +189,13 @@ class History(Base):
 
 # ----------- Payroll Models -----------
 
+
 # Represents an employee's work schedule.
 class Schedule(Base):
-    __tablename__ = 'schedule'
+    __tablename__ = "schedule"
 
     schedule_id = Column(Integer, primary_key=True)
-    employee_id = Column(Integer, ForeignKey('employee.employee_id'))
+    employee_id = Column(Integer, ForeignKey("employee.employee_id"))
     start_time = Column(Time)
     end_time = Column(Time)
     break_start = Column(Time)
@@ -192,15 +206,15 @@ class Schedule(Base):
 
 # Represents payroll information for an employee.
 class Payroll(Base):
-    __tablename__ = 'payroll'
+    __tablename__ = "payroll"
 
     payroll_id = Column(Integer, primary_key=True)
-    employee_id = Column(Integer, ForeignKey('employee.employee_id'))
+    employee_id = Column(Integer, ForeignKey("employee.employee_id"))
     payment_date = Column(Date)
     base_salary = Column(Double)
     bonuses = Column(Double)
     total_payment = Column(Double)
-    payment_method_id = Column(Integer, ForeignKey('payment_method.payment_method_id'))
+    payment_method_id = Column(Integer, ForeignKey("payment_method.payment_method_id"))
 
     employee = relationship("Employee", back_populates="payrolls")
     payment_method = relationship("PaymentMethod", back_populates="payrolls")
@@ -208,7 +222,7 @@ class Payroll(Base):
 
 # Represents different methods of payment (e.g., cash, bank transfer, etc.).
 class PaymentMethod(Base):
-    __tablename__ = 'payment_method'
+    __tablename__ = "payment_method"
 
     payment_method_id = Column(Integer, primary_key=True)
     name = Column(String(50))
@@ -218,9 +232,10 @@ class PaymentMethod(Base):
 
 # ----------- Absence Models -----------
 
+
 # Represents types of absences (vacation, sick leave, personal leave, etc.).
 class AbsenceType(Base):
-    __tablename__ = 'absence_type'
+    __tablename__ = "absence_type"
 
     absence_type_id = Column(Integer, primary_key=True)
     type_name = Column(String(50))
@@ -230,11 +245,11 @@ class AbsenceType(Base):
 
 # Represents an absence event for an employee.
 class WorkAbsence(Base):
-    __tablename__ = 'work_absences'
+    __tablename__ = "work_absences"
 
     absence_id = Column(Integer, primary_key=True)
-    employee_id = Column(Integer, ForeignKey('employee.employee_id'))
-    absence_type_id = Column(Integer, ForeignKey('absence_type.absence_type_id'))
+    employee_id = Column(Integer, ForeignKey("employee.employee_id"))
+    absence_type_id = Column(Integer, ForeignKey("absence_type.absence_type_id"))
     start_date = Column(Date)
     end_date = Column(Date)
     description = Column(String(100))
@@ -245,3 +260,30 @@ class WorkAbsence(Base):
 
 # Create all tables defined in the Base metadata if they don't exist.
 Base.metadata.create_all(bind=engine)
+
+# FastAPI app
+app = FastAPI(
+    title="FastAPI Example",
+    root_path="/api",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
+    swagger_ui_parameters={
+        "defaultModelsExpandDepth": -1,
+        "persistAuthorization": True,
+    },
+)
+
+
+# Dependency to get DB session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to FastAPI with Traefik, MySQL, and Adminer"}
