@@ -1,7 +1,7 @@
 services:
   traefik:
     image: traefik:v2.10
-    container_name: traefik
+    container_name: traefik-rh
     restart: unless-stopped
     ports:
       - "0.0.0.0:8085:80"
@@ -9,14 +9,14 @@ services:
       - "0.0.0.0:8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro # Archivo de configuración principal
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/config:/etc/traefik/config:ro
     networks:
-      - eam-elecitva-balancer
+      - net-rh
 
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: mysql-rh
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
@@ -26,22 +26,22 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - eam-elecitva-balancer
+      - net-rh
     labels:
       - "traefik.enable=false"
 
   adminer:
     image: adminer:latest
-    container_name: adminer
+    container_name: adminer-rh
     restart: always
     # Add explicit port mapping for direct access
     ports:
       - "8081:8080"
     environment:
-      - ADMINER_DEFAULT_SERVER=mysql
+      - ADMINER_DEFAULT_SERVER=mysql-rh
       - ADMINER_DESIGN=flat
     networks:
-      - eam-elecitva-balancer
+      - net-rh
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.adminer.rule=PathPrefix(`/adminer`)"
@@ -65,7 +65,7 @@ services:
     environment:
       - DATABASE_URL=mysql+pymysql://user:password@mysql:3306/mydatabase
     networks:
-      - eam-elecitva-balancer
+      - net-rh
     depends_on:
       - mysql
     labels:
@@ -80,7 +80,7 @@ services:
       - "traefik.http.middlewares.api-headers.headers.customrequestheaders.X-Forwarded-Prefix=/api"
 
 networks:
-  eam-elecitva-balancer:
+  net-rh:
     driver: bridge
 
 volumes:
