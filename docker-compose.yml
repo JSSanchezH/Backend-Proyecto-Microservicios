@@ -78,6 +78,8 @@ services:
       - "traefik.http.middlewares.api-strip.stripprefix.forceSlash=false"
       - "traefik.http.routers.api.middlewares=api-strip@docker"
       - "traefik.http.middlewares.api-headers.headers.customrequestheaders.X-Forwarded-Prefix=/api"
+      - "traefik.http.routers.api.middlewares=api-strip@docker,cors@file"
+
 
 networks:
   net-rh:
